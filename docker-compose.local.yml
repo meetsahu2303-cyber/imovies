@@ -1,0 +1,10 @@
+# Local HTTP-only container testing. Never use these overrides on a public deployment.
+services:
+  app:
+    environment:
+      NODE_ENV: development
+      PAYMENT_PROVIDER: demo
+      COOKIE_SECURE: 'false'
+      CLIENT_ORIGIN: http://localhost:4000
+      STRIPE_SECRET_KEY: ''
+      STRIPE_WEBHOOK_SECRET: ''

@@ -1,0 +1,32 @@
+{
+  "name": "imovies",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A full-stack cinema booking platform built with the MERN stack",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "setup:hosted": "node scripts/setup-hosted.mjs",
+    "seed:review": "node --env-file=.env.hosted scripts/seed-review.mjs",
+    "dev": "concurrently -k -n api,web -c cyan,magenta \"npm run dev -w server\" \"npm run dev -w client\"",
+    "dev:demo": "concurrently -k -n api,web -c cyan,magenta \"npm run demo -w server\" \"npm run dev -w client\"",
+    "seed": "npm run seed -w server",
+    "admin:create": "npm run admin:create -w server",
+    "build": "npm run build -w client",
+    "start": "npm start -w server",
+    "test": "npm test -w server",
+    "check": "npm test && npm run build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "prettier": "^3.9.10"
+  }
+}

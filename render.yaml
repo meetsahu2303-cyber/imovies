@@ -1,0 +1,39 @@
+# Public, no-charge mentor review deployment. Not a real-payment production setup.
+# Follow docs/SUBMISSION_GUIDE.md before creating this Blueprint.
+services:
+  - type: web
+    name: imovies-review
+    runtime: node
+    plan: free
+    region: singapore
+    branch: main
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 22.22.0
+      - key: NODE_ENV
+        value: production
+      - key: DEPLOYMENT_MODE
+        value: review
+      - key: PAYMENT_PROVIDER
+        value: demo
+      - key: COOKIE_SECURE
+        value: 'true'
+      - key: COOKIE_SAMESITE
+        value: lax
+      - key: ALLOW_PREVIEW
+        value: 'false'
+      - key: TRUST_PROXY
+        value: '1'
+      - key: PORT
+        value: '10000'
+      - key: MONGOMS_DISABLE_POSTINSTALL
+        value: '1'
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MONGODB_URI
+        sync: false
+      # CLIENT_ORIGIN defaults to Render's HTTPS RENDER_EXTERNAL_URL.
+      # Set CLIENT_ORIGIN explicitly only when using a custom domain.

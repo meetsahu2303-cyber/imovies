@@ -1,0 +1,13 @@
+node_modules
+dist
+.cache
+.git
+package-lock.json
+client/public/posters
+docs/screenshots
+uploads
+*.log
+
+.env.example
+.env.hosted.example
+client/.env.example

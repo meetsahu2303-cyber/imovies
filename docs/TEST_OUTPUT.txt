@@ -1,0 +1,188 @@
+
+> imovies@1.0.0 test
+> npm test -w server
+
+
+> @imovies/server@1.0.0 test
+> node --test --test-concurrency=1 tests/*.test.js
+
+TAP version 13
+# Subtest: health, security headers, pagination and input validation
+ok 1 - health, security headers, pagination and input validation
+  ---
+  duration_ms: 627.649927
+  ...
+# Subtest: registration hashes passwords, ignores role injection, rejects duplicates and weak passwords
+ok 2 - registration hashes passwords, ignores role injection, rejects duplicates and weak passwords
+  ---
+  duration_ms: 342.06274
+  ...
+# Subtest: anonymous session bootstrap is quiet and reflects authenticated users
+ok 3 - anonymous session bootstrap is quiet and reflects authenticated users
+  ---
+  duration_ms: 52.730648
+  ...
+# Subtest: image uploads validate actual content, not just the file extension
+ok 4 - image uploads validate actual content, not just the file extension
+  ---
+  duration_ms: 97.41471
+  ...
+# Subtest: authentication, role checks, CSRF and origin checks protect APIs
+ok 5 - authentication, role checks, CSRF and origin checks protect APIs
+  ---
+  duration_ms: 72.007482
+  ...
+# Subtest: refresh tokens rotate and logout revokes the database session
+ok 6 - refresh tokens rotate and logout revokes the database session
+  ---
+  duration_ms: 72.283826
+  ...
+# Subtest: catalog search and filtering by genre, language, theatre and business date
+ok 7 - catalog search and filtering by genre, language, theatre and business date
+  ---
+  duration_ms: 105.777861
+  ...
+# Subtest: admin movie CRUD and safe archival
+ok 8 - admin movie CRUD and safe archival
+  ---
+  duration_ms: 88.500696
+  ...
+# Subtest: admin theatre CRUD generates the physical seat collection
+ok 9 - admin theatre CRUD generates the physical seat collection
+  ---
+  duration_ms: 89.480639
+  ...
+# Subtest: show scheduling rejects overlaps and concurrent duplicate slots
+ok 10 - show scheduling rejects overlaps and concurrent duplicate slots
+  ---
+  duration_ms: 177.375304
+  ...
+# Subtest: overlapping seat requests have exactly one winner, with no partial holds
+ok 11 - overlapping seat requests have exactly one winner, with no partial holds
+  ---
+  duration_ms: 68.412847
+  ...
+# Subtest: invalid, duplicate, excess and unavailable seats are rejected
+ok 12 - invalid, duplicate, excess and unavailable seats are rejected
+  ---
+  duration_ms: 75.133385
+  ...
+# Subtest: a different user cannot release a hold; owner release makes seats available
+ok 13 - a different user cannot release a hold; owner release makes seats available
+  ---
+  duration_ms: 76.768532
+  ...
+# Subtest: booking amounts come from server seat tiers, not untrusted client totals
+ok 14 - booking amounts come from server seat tiers, not untrusted client totals
+  ---
+  duration_ms: 112.748713
+  ...
+# Subtest: idempotent booking creation never duplicates charges under concurrency
+ok 15 - idempotent booking creation never duplicates charges under concurrency
+  ---
+  duration_ms: 120.033046
+  ...
+# Subtest: payment failure is retryable, success is atomic and idempotent
+ok 16 - payment failure is retryable, success is atomic and idempotent
+  ---
+  duration_ms: 176.890603
+  ...
+# Subtest: concurrent confirmation and cancellation cannot double-sell or lose payment state
+ok 17 - concurrent confirmation and cancellation cannot double-sell or lose payment state
+  ---
+  duration_ms: 158.316404
+  ...
+# Subtest: expired reservations release all seats and close pending payments
+ok 18 - expired reservations release all seats and close pending payments
+  ---
+  duration_ms: 117.565788
+  ...
+# Subtest: user cancellation cutoff applies; administrators may cancel late
+ok 19 - user cancellation cutoff applies; administrators may cancel late
+  ---
+  duration_ms: 117.48113
+  ...
+# Subtest: public socket receives seat updates without leaking hold owners
+ok 20 - public socket receives seat updates without leaking hold owners
+  ---
+  duration_ms: 71.694164
+  ...
+# Subtest: booking history, notifications, profile and Stripe demo restrictions
+ok 21 - booking history, notifications, profile and Stripe demo restrictions
+  ---
+  duration_ms: 117.66907
+  ...
+# Subtest: quote helpers use integer currency and reject invalid calendar dates
+ok 22 - quote helpers use integer currency and reject invalid calendar dates
+  ---
+  duration_ms: 37.908151
+  ...
+# Subtest: ordinary production still refuses simulated payments
+ok 23 - ordinary production still refuses simulated payments
+  ---
+  duration_ms: 104.11399
+  ...
+# Subtest: explicit HTTPS review deployment permits only simulated payments
+ok 24 - explicit HTTPS review deployment permits only simulated payments
+  ---
+  duration_ms: 116.427194
+  ...
+# Subtest: review mode refuses insecure cookies and plaintext origins
+ok 25 - review mode refuses insecure cookies and plaintext origins
+  ---
+  duration_ms: 211.212695
+  ...
+# Subtest: review mode refuses Stripe credentials and preview exemptions
+ok 26 - review mode refuses Stripe credentials and preview exemptions
+  ---
+  duration_ms: 205.433576
+  ...
+# Subtest: public review keeps the no-charge banner but hides local demo credentials
+ok 27 - public review keeps the no-charge banner but hides local demo credentials
+  ---
+  duration_ms: 805.749641
+  ...
+# Subtest: review mode cannot be enabled on a development server
+ok 28 - review mode cannot be enabled on a development server
+  ---
+  duration_ms: 100.752754
+  ...
+# Subtest: Stripe checkout amount is server-controlled and repeated requests are idempotent
+ok 29 - Stripe checkout amount is server-controlled and repeated requests are idempotent
+  ---
+  duration_ms: 639.370547
+  ...
+# Subtest: verified payment event atomically confirms; event replay does not duplicate booking
+ok 30 - verified payment event atomically confirms; event replay does not duplicate booking
+  ---
+  duration_ms: 86.599878
+  ...
+# Subtest: incorrect amount or account metadata cannot confirm a payment
+ok 31 - incorrect amount or account metadata cannot confirm a payment
+  ---
+  duration_ms: 51.266827
+  ...
+# Subtest: paid reservation conflict is marked for refund and refunded idempotently
+ok 32 - paid reservation conflict is marked for refund and refunded idempotently
+  ---
+  duration_ms: 93.111452
+  ...
+# Subtest: a delayed paid event after local expiry initiates a refund rather than retrying forever
+ok 33 - a delayed paid event after local expiry initiates a refund rather than retrying forever
+  ---
+  duration_ms: 60.651411
+  ...
+# Subtest: real webhook route requires a valid Stripe signature and rejects demo confirmation
+ok 34 - real webhook route requires a valid Stripe signature and rejects demo confirmation
+  ---
+  duration_ms: 97.050998
+  ...
+1..34
+# tests 34
+# suites 0
+# pass 34
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7990.701237

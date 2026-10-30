@@ -1,0 +1,1317 @@
+{
+  "info": {
+    "name": "IMovies Cinema API",
+    "description": "Run against npm run dev:demo. Login first. Holds → Create booking → Checkout → Payment success → Cancel. Run admin requests with the administrator login. Variables are populated by test scripts. Do not run destructive admin requests against real customer data.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000/api"
+    },
+    {
+      "key": "userEmail",
+      "value": "alex@imovies.local"
+    },
+    {
+      "key": "userPassword",
+      "value": "Movie@12345"
+    },
+    {
+      "key": "adminEmail",
+      "value": "admin@imovies.local"
+    },
+    {
+      "key": "adminPassword",
+      "value": "Admin@12345"
+    },
+    {
+      "key": "idempotencyKey",
+      "value": "6de60afb-c1ab-41d5-ae08-aecc579ec0ad"
+    },
+    {
+      "key": "movieId",
+      "value": ""
+    },
+    {
+      "key": "theatreId",
+      "value": ""
+    },
+    {
+      "key": "showId",
+      "value": ""
+    },
+    {
+      "key": "holdId",
+      "value": ""
+    },
+    {
+      "key": "bookingId",
+      "value": ""
+    },
+    {
+      "key": "paymentId",
+      "value": ""
+    },
+    {
+      "key": "createdMovieId",
+      "value": ""
+    },
+    {
+      "key": "createdTheatreId",
+      "value": ""
+    },
+    {
+      "key": "createdScreenId",
+      "value": ""
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (pm.request.url.toString().includes('/bookings') && pm.request.method === 'POST' && pm.request.body?.raw?.includes('idempotencyKey')) { /* Keep the key stable for explicit retries. Change it manually for a new booking. */ }"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Configuration",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/config",
+          "host": ["{{baseUrl}}"],
+          "path": ["config"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login — moviegoer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "login"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login — administrator",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "login"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Current user",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/auth/me",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "me"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Register user",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/auth/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "register"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Postman Moviegoer\",\n  \"email\": \"postman-1793308041244@example.test\",\n  \"password\": \"PostmanPassword123\",\n  \"city\": \"Mumbai\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Refresh session",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/auth/refresh",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "refresh"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Movie catalog",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/movies?status=now_showing&page=1&limit=12",
+          "host": ["{{baseUrl}}"],
+          "path": ["movies?status=now_showing&page=1&limit=12"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Request succeeded\", () => pm.response.to.be.success);",
+              "pm.collectionVariables.set(\"movieId\", pm.response.json().items[0]._id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search and filter movies",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/movies?q=Interstellar&genre=Sci-Fi&language=English",
+          "host": ["{{baseUrl}}"],
+          "path": ["movies?q=Interstellar&genre=Sci-Fi&language=English"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Movie details",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/movies/{{movieId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["movies", "{{movieId}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Theatres",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/theatres?city=Mumbai",
+          "host": ["{{baseUrl}}"],
+          "path": ["theatres?city=Mumbai"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Request succeeded\", () => pm.response.to.be.success);",
+              "pm.collectionVariables.set(\"theatreId\", pm.response.json().items[0]._id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Shows",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/shows?city=Mumbai",
+          "host": ["{{baseUrl}}"],
+          "path": ["shows?city=Mumbai"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Request succeeded\", () => pm.response.to.be.success);",
+              "pm.collectionVariables.set(\"showId\", pm.response.json().items[0]._id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Seat availability",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/shows/{{showId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["shows", "{{showId}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Hold seats",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/shows/{{showId}}/holds",
+          "host": ["{{baseUrl}}"],
+          "path": ["shows", "{{showId}}", "holds"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"seatIds\": [\n    \"A1\",\n    \"A2\"\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Request succeeded\", () => pm.response.to.be.success);",
+              "pm.collectionVariables.set(\"holdId\", pm.response.json().holdId);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create booking",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/bookings",
+          "host": ["{{baseUrl}}"],
+          "path": ["bookings"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"showId\": \"{{showId}}\",\n  \"holdId\": \"{{holdId}}\",\n  \"idempotencyKey\": \"{{idempotencyKey}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Request succeeded\", () => pm.response.to.be.success);",
+              "pm.collectionVariables.set(\"bookingId\", pm.response.json().booking._id);",
+              "pm.collectionVariables.set(\"paymentId\", pm.response.json().payment._id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Retry same booking (idempotent)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/bookings",
+          "host": ["{{baseUrl}}"],
+          "path": ["bookings"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"showId\": \"{{showId}}\",\n  \"holdId\": \"{{holdId}}\",\n  \"idempotencyKey\": \"{{idempotencyKey}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Checkout",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/bookings/{{bookingId}}/checkout",
+          "host": ["{{baseUrl}}"],
+          "path": ["bookings", "{{bookingId}}", "checkout"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Simulate payment failure",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/payments/{{paymentId}}/demo",
+          "host": ["{{baseUrl}}"],
+          "path": ["payments", "{{paymentId}}", "demo"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"outcome\": \"failure\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get new pending payment",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/bookings/{{bookingId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["bookings", "{{bookingId}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Request succeeded\", () => pm.response.to.be.success);",
+              "pm.collectionVariables.set(\"paymentId\", pm.response.json().payments.find(p => p.status === \"pending\")._id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Simulate payment success",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/payments/{{paymentId}}/demo",
+          "host": ["{{baseUrl}}"],
+          "path": ["payments", "{{paymentId}}", "demo"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"outcome\": \"success\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Booking details and QR",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/bookings/{{bookingId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["bookings", "{{bookingId}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Upcoming bookings",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/bookings?scope=upcoming",
+          "host": ["{{baseUrl}}"],
+          "path": ["bookings?scope=upcoming"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Past bookings",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/bookings?scope=past",
+          "host": ["{{baseUrl}}"],
+          "path": ["bookings?scope=past"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/notifications",
+          "host": ["{{baseUrl}}"],
+          "path": ["notifications"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read notifications",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/notifications/read",
+          "host": ["{{baseUrl}}"],
+          "path": ["notifications", "read"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cancel booking",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/bookings/{{bookingId}}/cancel",
+          "host": ["{{baseUrl}}"],
+          "path": ["bookings", "{{bookingId}}", "cancel"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Release hold (alternative to booking)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/shows/{{showId}}/holds",
+          "host": ["{{baseUrl}}"],
+          "path": ["shows", "{{showId}}", "holds"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"holdId\": \"{{holdId}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin dashboard",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/dashboard",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "dashboard"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin movies",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/movies",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "movies"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin create movie",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/movies",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "movies"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Postman Test Movie\",\n  \"description\": \"A movie created by the API test collection.\",\n  \"poster\": \"/posters/interstellar.jpg\",\n  \"genres\": [\n    \"Drama\"\n  ],\n  \"languages\": [\n    \"English\"\n  ],\n  \"duration\": 100,\n  \"rating\": 8,\n  \"certificate\": \"UA\",\n  \"releaseDate\": \"2026-10-29T21:07:21.245Z\",\n  \"formats\": [\n    \"2D\"\n  ],\n  \"status\": \"now_showing\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Request succeeded\", () => pm.response.to.be.success);",
+              "pm.collectionVariables.set(\"createdMovieId\", pm.response.json().movie._id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin update movie",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/movies/{{createdMovieId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "movies", "{{createdMovieId}}"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Postman Updated Movie\",\n  \"rating\": 9\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin archive movie",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/movies/{{createdMovieId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "movies", "{{createdMovieId}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin theatres",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/theatres",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "theatres"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin create theatre",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/theatres",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "theatres"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Postman Cinema\",\n  \"city\": \"Mumbai\",\n  \"address\": \"A test cinema address\",\n  \"screens\": [\n    {\n      \"name\": \"Screen 1\",\n      \"rows\": 5,\n      \"columns\": 8,\n      \"aisleAfter\": 4,\n      \"premiumFrom\": 4\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Request succeeded\", () => pm.response.to.be.success);",
+              "pm.collectionVariables.set(\"createdTheatreId\", pm.response.json().theatre._id);",
+              "pm.collectionVariables.set(\"createdScreenId\", pm.response.json().theatre.screens[0]._id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin deactivate theatre",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/theatres/{{createdTheatreId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "theatres", "{{createdTheatreId}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin shows",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/shows",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "shows"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin bookings",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/bookings",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "bookings"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin cancel and refund",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/bookings/{{bookingId}}/cancel",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "bookings", "{{bookingId}}", "cancel"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Update profile",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/auth/me",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "me"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Alex Morgan\",\n  \"city\": \"Mumbai\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Logout",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/auth/logout",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "logout"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test(\"Request succeeded\", () => pm.response.to.be.success);"]
+          }
+        }
+      ]
+    }
+  ]
+}
